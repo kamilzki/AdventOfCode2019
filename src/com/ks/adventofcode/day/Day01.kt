@@ -20,7 +20,7 @@ object FuelCalculator {
 }
 
 fun main() {
-    val massModules = Utils.readInput("day01").map { it.toInt() }
+    val massModules = Utils.readInputByLines("day01").map { it.toInt() }
     println("Part 1: ${FuelCalculator.calculateFuelForSpacecraft(massModules)}")
     println("Part 2: ${FuelCalculator.calculateFuelConsiderFuel(massModules)}")
 }
