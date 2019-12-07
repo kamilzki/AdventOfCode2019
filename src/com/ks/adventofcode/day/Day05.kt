@@ -7,5 +7,6 @@ fun main() {
     val program = Utils.readInput("day05")
         .split(',')
         .map { it.trimEnd().toInt() }
-    ShipComputer(program).runProgram()
+    IntcodeComputer(program, 1).runProgram()
+    IntcodeComputer(program, 5).runProgram()
 }

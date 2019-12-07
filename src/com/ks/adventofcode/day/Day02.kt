@@ -8,8 +8,8 @@ class GravityAssistSolver(private val programValues: List<Int>, private val min:
             val currentValues = programValues.toMutableList()
             currentValues.changeNoun(it.first)
             currentValues.changeVerb(it.second)
-            val programRunner = ShipComputer(currentValues)
-            if (programRunner.runProgram()[0] == resultToFound)
+            val programRunner = IntcodeComputer(currentValues)
+            if (programRunner.runProgram() == resultToFound)
                 return it
         }
         return null
@@ -38,8 +38,8 @@ private fun backTo1202AlarmState(programValues: List<Int>): MutableList<Int> {
 
 fun main() {
     val programValues = Utils.readInput("day02").split(',').map { it.trimEnd().toInt() }
-    val programRunner = ShipComputer(backTo1202AlarmState(programValues))
-    println("Part 1: " + programRunner.runProgram()[0])
+    val programRunner = IntcodeComputer(backTo1202AlarmState(programValues))
+    println("Part 1: " + programRunner.runProgram())
 
     val gravityAssistSolver = GravityAssistSolver(programValues)
     val solution = gravityAssistSolver.solve(19690720) ?: throw IllegalArgumentException("No solution!")

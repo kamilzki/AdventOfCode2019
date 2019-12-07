@@ -1,6 +1,6 @@
 package com.ks.adventofcode.day
 
-class ShipComputer(programValues: List<Int>) {
+class IntcodeComputer(programValues: List<Int>, private val inputInstruction: Int = -1) {
     private val memory = programValues.toMutableList()
 
     sealed class Mode {
@@ -33,12 +33,22 @@ class ShipComputer(programValues: List<Int>) {
         }
 
         sealed class Execution : Optcode() {
-            abstract fun executeOptcodeInstruction(pointer: Int, memory: MutableList<Int>, params: List<Mode>)
+            abstract fun executeOptcodeInstruction(
+                pointer: Int,
+                memory: MutableList<Int>,
+                params: List<Mode>,
+                inputInstruction: Int
+            )
             abstract fun getPointerMove(): Int
             internal fun saveTo(pointer: Int) = pointer + getPointerMove() - 1
 
             object Add : Execution() {
-                override fun executeOptcodeInstruction(pointer: Int, memory: MutableList<Int>, params: List<Mode>) {
+                override fun executeOptcodeInstruction(
+                    pointer: Int,
+                    memory: MutableList<Int>,
+                    params: List<Mode>,
+                    inputInstruction: Int
+                ) {
                     val newValue = memory.getValue(pointer + 1, params[0]) +
                             memory.getValue(pointer + 2, params[1])
                     memory.setValue(saveTo(pointer), newValue)
@@ -48,7 +58,12 @@ class ShipComputer(programValues: List<Int>) {
             }
 
             object Mul : Execution() {
-                override fun executeOptcodeInstruction(pointer: Int, memory: MutableList<Int>, params: List<Mode>) {
+                override fun executeOptcodeInstruction(
+                    pointer: Int,
+                    memory: MutableList<Int>,
+                    params: List<Mode>,
+                    inputInstruction: Int
+                ) {
                     val newValue = memory.getValue(pointer + 1, params[0]) *
                             memory.getValue(pointer + 2, params[1])
                     memory.setValue(saveTo(pointer), newValue)
@@ -58,19 +73,24 @@ class ShipComputer(programValues: List<Int>) {
             }
 
             object Input : Execution() {
-                override fun executeOptcodeInstruction(pointer: Int, memory: MutableList<Int>, params: List<Mode>) =
-                    memory.setValue(saveTo(pointer), readValue())
-
-                private fun readValue(): Int {
-                    println("Write value: ")
-                    return readLine()!!.toInt()
-                }
+                override fun executeOptcodeInstruction(
+                    pointer: Int,
+                    memory: MutableList<Int>,
+                    params: List<Mode>,
+                    inputInstruction: Int
+                ) =
+                    memory.setValue(saveTo(pointer), inputInstruction)
 
                 override fun getPointerMove(): Int = 2
             }
 
             object Output : Execution() {
-                override fun executeOptcodeInstruction(pointer: Int, memory: MutableList<Int>, params: List<Mode>) {
+                override fun executeOptcodeInstruction(
+                    pointer: Int,
+                    memory: MutableList<Int>,
+                    params: List<Mode>,
+                    inputInstruction: Int
+                ) {
                     println(memory.getValue(pointer + 1, params[0]))
                 }
 
@@ -78,7 +98,12 @@ class ShipComputer(programValues: List<Int>) {
             }
 
             object LessThan : Execution() {
-                override fun executeOptcodeInstruction(pointer: Int, memory: MutableList<Int>, params: List<Mode>) {
+                override fun executeOptcodeInstruction(
+                    pointer: Int,
+                    memory: MutableList<Int>,
+                    params: List<Mode>,
+                    inputInstruction: Int
+                ) {
                     val first = memory.getValue(pointer + 1, params[0])
                     val second = memory.getValue(pointer + 2, params[1])
                     memory.setValue(saveTo(pointer), if (first < second) 1 else 0)
@@ -88,7 +113,12 @@ class ShipComputer(programValues: List<Int>) {
             }
 
             object Equals : Execution() {
-                override fun executeOptcodeInstruction(pointer: Int, memory: MutableList<Int>, params: List<Mode>) {
+                override fun executeOptcodeInstruction(
+                    pointer: Int,
+                    memory: MutableList<Int>,
+                    params: List<Mode>,
+                    inputInstruction: Int
+                ) {
                     val first = memory.getValue(pointer + 1, params[0])
                     val second = memory.getValue(pointer + 2, params[1])
                     memory.setValue(LessThan.saveTo(pointer), if (first == second) 1 else 0)
@@ -134,9 +164,9 @@ class ShipComputer(programValues: List<Int>) {
         }
     }
 
-    fun runProgram(): MutableList<Int> {
+    fun runProgram(): Int {
         solveSubprogram(0)
-        return memory
+        return memory[0]
     }
 
     private tailrec fun solveSubprogram(instructionPointer: Int) {
@@ -146,7 +176,7 @@ class ShipComputer(programValues: List<Int>) {
         if (optcode is Optcode.Jump) {
             solveSubprogram(optcode.jumpInstruction(instructionPointer, memory, params))
         } else if (optcode is Optcode.Execution) {
-            optcode.executeOptcodeInstruction(instructionPointer, memory, params)
+            optcode.executeOptcodeInstruction(instructionPointer, memory, params, inputInstruction)
             solveSubprogram(instructionPointer + optcode.getPointerMove())
         }
     }
