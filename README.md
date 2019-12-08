@@ -9,3 +9,4 @@
 | 4 | Secure Container                      | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/com/ks/adventofcode/day/Day04.kt) [\[AoC\]](http://adventofcode.com/2019/day/4)
 | 5 | Sunny with a Chance of Asteroids      | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/com/ks/adventofcode/day/Day05.kt) [\[AoC\]](http://adventofcode.com/2019/day/5)
 | 6 | Universal Orbit Map                   | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/com/ks/adventofcode/day/Day06.kt) [\[AoC\]](http://adventofcode.com/2019/day/6)
+| 7 | Day 7: Amplification Circuit          | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/com/ks/adventofcode/day/Day07.kt) [\[AoC\]](http://adventofcode.com/2019/day/7)
