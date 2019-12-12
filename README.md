@@ -10,3 +10,4 @@
 | 5 | Sunny with a Chance of Asteroids      | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/com/ks/adventofcode/day/Day05.kt) [\[AoC\]](http://adventofcode.com/2019/day/5)
 | 6 | Universal Orbit Map                   | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/com/ks/adventofcode/day/Day06.kt) [\[AoC\]](http://adventofcode.com/2019/day/6)
 | 7 | Amplification Circuit                 | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/com/ks/adventofcode/day/Day07.kt) [\[AoC\]](http://adventofcode.com/2019/day/7)
+| 8 | Space Image Format                    | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/com/ks/adventofcode/day/Day08.kt) [\[AoC\]](http://adventofcode.com/2019/day/8)
