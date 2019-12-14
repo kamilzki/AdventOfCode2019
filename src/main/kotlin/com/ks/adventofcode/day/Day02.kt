@@ -29,7 +29,7 @@ private fun <E> MutableList<E>.changeVerb(value: E) {
     this[2] = value
 }
 
-private fun backTo1202AlarmState(programValues: List<Long>): MutableList<Long> {
+internal fun backTo1202AlarmState(programValues: List<Long>): MutableList<Long> {
     val mutable = programValues.toMutableList()
     mutable.changeNoun(12)
     mutable.changeVerb(2)
