@@ -2,12 +2,12 @@ package com.ks.adventofcode.day
 
 import com.ks.adventofcode.util.Utils
 
-class Amplifier(program: List<Int>, private val phase: Int) {
+class Amplifier(program: List<Long>, private val phase: Int) {
     var done = false
     var first = true
     private val intcodeComputer = IntcodeComputer(program)
 
-    fun execute(inputInstructions: List<Int>): List<Int> {
+    fun execute(inputInstructions: List<Int>): List<Long> {
         val instructions = if (first) listOf(phase) + inputInstructions else inputInstructions
         intcodeComputer.runProgram(instructions)
         first = false
@@ -17,7 +17,7 @@ class Amplifier(program: List<Int>, private val phase: Int) {
     }
 }
 
-class AmplitudeSolver(private val program: List<Int>, private val phases: List<Int>) {
+class AmplitudeSolver(private val program: List<Long>, private val phases: List<Int>) {
 
     fun findTheHighestSignal(feedbackLoop: Boolean = false): Int {
         val logic = if (!feedbackLoop)
@@ -38,7 +38,7 @@ class AmplitudeSolver(private val program: List<Int>, private val phases: List<I
         var output = 0
         amplifiers.forEach { amplifier ->
             val inputInstructions = listOf(output)
-            output = amplifier.execute(inputInstructions).last()
+            output = amplifier.execute(inputInstructions).last().toInt()
         }
         return output
     }
@@ -48,7 +48,7 @@ class AmplitudeSolver(private val program: List<Int>, private val phases: List<I
         while (!amplifiers.last().done) {
             amplifiers.forEach { amplifier ->
                 val inputInstructions = output
-                output = amplifier.execute(inputInstructions)
+                output = amplifier.execute(inputInstructions).map { it.toInt() }
             }
         }
         return output.last()
@@ -77,19 +77,19 @@ class AmplitudeSolver(private val program: List<Int>, private val phases: List<I
 fun main() {
     val amplifierControllerSoftware = Utils.readInput("day07")
         .split(',')
-        .map { it.trimEnd().toInt() }
+        .map { it.trimEnd().toLong() }
     part1(amplifierControllerSoftware)
     part2(amplifierControllerSoftware)
 }
 
-private fun part1(amplifierControllerSoftware: List<Int>) {
+private fun part1(amplifierControllerSoftware: List<Long>) {
     val phases = (0..4).toList()
     val solver = AmplitudeSolver(amplifierControllerSoftware, phases)
     println("Max output for standard connection: ${solver.findTheHighestSignal()}")
 }
 
-fun part2(amplifierControllerSoftware: List<Int>) {
+fun part2(amplifierControllerSoftware: List<Long>) {
     val phases = (5..9).toList()
     val solver = AmplitudeSolver(amplifierControllerSoftware, phases)
-    println("Max output for feedback loop: ${solver.findTheHighestSignal()}")
+    println("Max output for feedback loop: ${solver.findTheHighestSignal(true)}")
 }

@@ -2,8 +2,8 @@ package com.ks.adventofcode.day
 
 import com.ks.adventofcode.util.Utils
 
-class GravityAssistSolver(private val programValues: List<Int>, private val min: Int = 0, private val max: Int = 99) {
-    fun solve(resultToFound: Int): Pair<Int, Int>? {
+class GravityAssistSolver(private val programValues: List<Long>, private val min: Long = 0, private val max: Long = 99) {
+    fun solve(resultToFound: Long): Pair<Long, Long>? {
         generatePairs(min).takeWhile { it.second <= max }.forEach {
             val currentValues = programValues.toMutableList()
             currentValues.changeNoun(it.first)
@@ -15,10 +15,10 @@ class GravityAssistSolver(private val programValues: List<Int>, private val min:
         return null
     }
 
-    private fun generatePairs(min: Int) =
-        generateSequence(Pair(min, min), { getNextPair(it.first, it.second) })
+    private fun generatePairs(min: Long) =
+            generateSequence(Pair(min, min), { getNextPair(it.first, it.second) })
 
-    private fun getNextPair(min: Int, max: Int) = if (min >= 99) Pair(0, max + 1) else Pair(min + 1, max)
+    private fun getNextPair(min: Long, max: Long) = if (min >= 99L) Pair(0L, max + 1) else Pair(min + 1, max)
 }
 
 private fun <E> MutableList<E>.changeNoun(value: E) {
@@ -29,7 +29,7 @@ private fun <E> MutableList<E>.changeVerb(value: E) {
     this[2] = value
 }
 
-private fun backTo1202AlarmState(programValues: List<Int>): MutableList<Int> {
+private fun backTo1202AlarmState(programValues: List<Long>): MutableList<Long> {
     val mutable = programValues.toMutableList()
     mutable.changeNoun(12)
     mutable.changeVerb(2)
@@ -37,11 +37,12 @@ private fun backTo1202AlarmState(programValues: List<Int>): MutableList<Int> {
 }
 
 fun main() {
-    val programValues = Utils.readInput("day02").split(',').map { it.trimEnd().toInt() }
+    val programValues = Utils.readInput("day02").split(',')
+            .map { it.trimEnd().toLong() }
     val programRunner = IntcodeComputer(backTo1202AlarmState(programValues))
     println("Part 1: " + programRunner.runProgram())
 
     val gravityAssistSolver = GravityAssistSolver(programValues)
-    val solution = gravityAssistSolver.solve(19690720) ?: throw IllegalArgumentException("No solution!")
+    val solution = gravityAssistSolver.solve(19690720L) ?: throw IllegalArgumentException("No solution!")
     println("Part 2: " + (100 * solution.first + solution.second))
 }

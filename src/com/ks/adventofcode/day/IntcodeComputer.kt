@@ -1,22 +1,25 @@
 package com.ks.adventofcode.day
 
-class IntcodeComputer(programValues: List<Int>) {
+class IntcodeComputer(programValues: List<Long>) {
     var state: State = State.WAIT
-    val outputOfProgram = mutableListOf<Int>()
+    val outputOfProgram = mutableListOf<Long>()
     private val memory = programValues.toMutableList()
-    private var instructionPointer = 0
+    private var pointer = 0
+    private var relativeBase = 0L
 
     sealed class Mode {
         companion object {
             operator fun invoke(value: Int) = when (value) {
                 0 -> Position
                 1 -> Immediate
+                2 -> Relative
                 else -> throw IllegalArgumentException("Wrong mode code for $value")
             }
         }
 
-        object Position : Mode()
-        object Immediate : Mode()
+        object Position : IntcodeComputer.Mode()
+        object Immediate : IntcodeComputer.Mode()
+        object Relative : IntcodeComputer.Mode()
     }
 
     sealed class State {
@@ -25,165 +28,7 @@ class IntcodeComputer(programValues: List<Int>) {
         object HALT : State()
     }
 
-    sealed class Optcode {
-        companion object {
-            operator fun invoke(value: Int): Optcode {
-                return when (value) {
-                    1 -> Execution.Add
-                    2 -> Execution.Mul
-                    3 -> Execution.Input
-                    4 -> Execution.Output
-                    5 -> Jump.JumpTrue
-                    6 -> Jump.JumpFalse
-                    7 -> Execution.LessThan
-                    8 -> Execution.Equals
-                    99 -> End
-                    else -> throw IllegalArgumentException("Wrong opcode code for $value")
-                }
-            }
-        }
-
-        sealed class Execution : Optcode() {
-            abstract fun executeOptcodeInstruction(
-                pointer: Int,
-                memory: MutableList<Int>,
-                params: List<Mode>,
-                inputInstructions: MutableList<Int>
-            ): Int?
-
-            abstract fun getPointerMove(): Int
-            internal fun saveTo(pointer: Int) = pointer + getPointerMove() - 1
-
-            object Add : Execution() {
-                override fun executeOptcodeInstruction(
-                    pointer: Int,
-                    memory: MutableList<Int>,
-                    params: List<Mode>,
-                    inputInstructions: MutableList<Int>
-                ): Int? {
-                    val newValue = memory.getValue(pointer + 1, params[0]) +
-                            memory.getValue(pointer + 2, params[1])
-                    memory.setValue(saveTo(pointer), newValue)
-                    return null
-                }
-
-                override fun getPointerMove(): Int = 4
-            }
-
-            object Mul : Execution() {
-                override fun executeOptcodeInstruction(
-                    pointer: Int,
-                    memory: MutableList<Int>,
-                    params: List<Mode>,
-                    inputInstructions: MutableList<Int>
-                ): Int? {
-                    val newValue = memory.getValue(pointer + 1, params[0]) *
-                            memory.getValue(pointer + 2, params[1])
-                    memory.setValue(saveTo(pointer), newValue)
-                    return null
-                }
-
-                override fun getPointerMove(): Int = 4
-            }
-
-            object Input : Execution() {
-                override fun executeOptcodeInstruction(
-                    pointer: Int,
-                    memory: MutableList<Int>,
-                    params: List<Mode>,
-                    inputInstructions: MutableList<Int>
-                ): Int? {
-                    val value = inputInstructions.removeAt(0)
-                    memory.setValue(saveTo(pointer), value)
-                    return null
-                }
-
-                override fun getPointerMove(): Int = 2
-            }
-
-            object Output : Execution() {
-                override fun executeOptcodeInstruction(
-                    pointer: Int,
-                    memory: MutableList<Int>,
-                    params: List<Mode>,
-                    inputInstructions: MutableList<Int>
-                ): Int? {
-                    return memory.getValue(pointer + 1, params[0])
-                }
-
-                override fun getPointerMove(): Int = 2
-            }
-
-            object LessThan : Execution() {
-                override fun executeOptcodeInstruction(
-                    pointer: Int,
-                    memory: MutableList<Int>,
-                    params: List<Mode>,
-                    inputInstructions: MutableList<Int>
-                ): Int? {
-                    val first = memory.getValue(pointer + 1, params[0])
-                    val second = memory.getValue(pointer + 2, params[1])
-                    memory.setValue(saveTo(pointer), if (first < second) 1 else 0)
-                    return null
-                }
-
-                override fun getPointerMove(): Int = 4
-            }
-
-            object Equals : Execution() {
-                override fun executeOptcodeInstruction(
-                    pointer: Int,
-                    memory: MutableList<Int>,
-                    params: List<Mode>,
-                    inputInstructions: MutableList<Int>
-                ): Int? {
-                    val first = memory.getValue(pointer + 1, params[0])
-                    val second = memory.getValue(pointer + 2, params[1])
-                    memory.setValue(LessThan.saveTo(pointer), if (first == second) 1 else 0)
-                    return null
-                }
-
-                override fun getPointerMove(): Int = 4
-            }
-        }
-
-        sealed class Jump : Optcode() {
-            abstract fun jumpInstruction(pointer: Int, memory: MutableList<Int>, params: List<Mode>): Int
-            internal fun Int.getJumpPointer(cond: Boolean, pointer: Int) =
-                if (cond) this else getPointerMove() + pointer
-
-            private fun getPointerMove(): Int = 3
-
-            object JumpTrue : Jump() {
-                override fun jumpInstruction(pointer: Int, memory: MutableList<Int>, params: List<Mode>): Int {
-                    val first = memory.getValue(pointer + 1, params[0])
-                    val second = memory.getValue(pointer + 2, params[1])
-                    return second.getJumpPointer(first != 0, pointer)
-                }
-            }
-
-            object JumpFalse : Jump() {
-                override fun jumpInstruction(pointer: Int, memory: MutableList<Int>, params: List<Mode>): Int {
-                    val first = memory.getValue(pointer + 1, params[0])
-                    val second = memory.getValue(pointer + 2, params[1])
-                    return second.getJumpPointer(first == 0, pointer)
-                }
-            }
-        }
-
-        object End : Optcode()
-
-        internal fun List<Int>.getValue(position: Int, mode: Mode): Int = when (mode) {
-            Mode.Position -> this[this[position]]
-            Mode.Immediate -> this[position]
-        }
-
-        fun MutableList<Int>.setValue(position: Int, value: Int) {
-            this[this[position]] = value
-        }
-    }
-
-    fun runProgram(inputInstructions: List<Int> = emptyList()): Int {
+    fun runProgram(inputInstructions: List<Int> = emptyList()): Long {
         outputOfProgram.clear()
         state = State.RUNNING
         solveSubprogram(inputInstructions.toMutableList())
@@ -191,33 +36,158 @@ class IntcodeComputer(programValues: List<Int>) {
     }
 
     private tailrec fun solveSubprogram(remainingInputs: MutableList<Int>) {
-        val optcodeWithParams = memory[instructionPointer].toString().padStart(5, '0')
+        val optcodeWithParams = memory[pointer].toString().padStart(5, '0')
         val (params, optcode) = optcodeWithParams.splitToInstructionParts()
-        when (optcode) {
-            is Optcode.Jump -> {
-                instructionPointer = optcode.jumpInstruction(instructionPointer, memory, params)
-                solveSubprogram(remainingInputs)
+        pointer = when (optcode) {
+            is Optcode.Add -> {
+                val newValue = memory.getValue(pointer + 1, params[0]) +
+                        memory.getValue(pointer + 2, params[1])
+
+                memory.setValue(optcode.saveTo(pointer), newValue, params[2])
+                pointer + optcode.getPointerMove()
             }
-            is Optcode.Execution -> {
-                if (optcode is Optcode.Execution.Input && remainingInputs.isEmpty()) {
+            is Optcode.Mul -> {
+                val newValue = memory.getValue(pointer + 1, params[0]) *
+                        memory.getValue(pointer + 2, params[1])
+                memory.setValue(optcode.saveTo(pointer), newValue, params[2])
+                pointer + optcode.getPointerMove()
+            }
+            is Optcode.Input -> {
+                if (remainingInputs.isEmpty()) {
                     state = State.WAIT
                     return
-                } else {
-                    val result =
-                        optcode.executeOptcodeInstruction(instructionPointer, memory, params, remainingInputs)
-                    if (result != null) {
-                        outputOfProgram.add(result)
-                    }
-                    instructionPointer += optcode.getPointerMove()
-                    solveSubprogram(remainingInputs)
                 }
+
+                val value = remainingInputs.removeAt(0)
+                memory.setValue(optcode.saveTo(pointer), value.toLong(), params[0])
+                pointer + optcode.getPointerMove()
             }
-            is Optcode.End -> state = State.HALT
+            is Optcode.Output -> {
+                val result = memory.getValue(pointer + 1, params[0])
+                outputOfProgram.add(result)
+                pointer + optcode.getPointerMove()
+            }
+            is Optcode.JumpTrue -> {
+                val first = memory.getValue(pointer + 1, params[0])
+                val second = memory.getValue(pointer + 2, params[1])
+                second.getJumpPointer(first != 0L, pointer, optcode)
+            }
+            is Optcode.JumpFalse -> {
+                val first = memory.getValue(pointer + 1, params[0])
+                val second = memory.getValue(pointer + 2, params[1])
+                second.getJumpPointer(first == 0L, pointer, optcode)
+            }
+            is Optcode.LessThan -> {
+                val first = memory.getValue(pointer + 1, params[0])
+                val second = memory.getValue(pointer + 2, params[1])
+                memory.setValue(optcode.saveTo(pointer), if (first < second) 1 else 0, params[2])
+                pointer + optcode.getPointerMove()
+            }
+            is Optcode.Equals -> {
+                val first = memory.getValue(pointer + 1, params[0])
+                val second = memory.getValue(pointer + 2, params[1])
+                memory.setValue(Optcode.LessThan.saveTo(pointer), if (first == second) 1 else 0, params[2])
+                pointer + optcode.getPointerMove()
+            }
+            is Optcode.RelativeBaseOffset -> {
+                val value = memory.getValue(pointer + 1, params[0])
+                relativeBase += value
+                pointer + optcode.getPointerMove()
+            }
+            is Optcode.End -> {
+                state = State.HALT
+                return
+            }
         }
+        solveSubprogram(remainingInputs)
     }
+
+    private fun Long.getJumpPointer(cond: Boolean, pointer: Int, optcode: Optcode) =
+                if (cond) this.toInt() else optcode.getPointerMove() + pointer
 
     private fun String.splitToInstructionParts() = let {
         val index = 3
         take(index).map { c -> Mode(c.toInt() - 48) }.reversed() to Optcode(substring(index).toInt())
+    }
+
+    private fun MutableList<Long>.getValue(position: Int, mode: Mode): Long = when (mode) {
+        Mode.Position -> this.getOrElse(this.getOrElse(position) { 0 }.toInt()) { 0L }
+        Mode.Immediate -> this[position]
+        Mode.Relative -> {
+            if (position >= this.size) {
+                this.addAll(List(position - this.size + 1) { 0L })
+            }
+            this[(this[position] + relativeBase).toInt()]
+        }
+    }
+
+    private fun MutableList<Long>.setValue(position: Int, value: Long, mode: Mode) {
+        val posFromMemory = when (mode) {
+            Mode.Position -> this[position]
+            Mode.Relative -> {
+                this[position] + relativeBase.toInt()
+            }
+            else -> throw IllegalArgumentException("Wrong mode for set value: $mode")
+        }.toInt()
+
+        if (posFromMemory >= this.size) {
+            this.addAll(MutableList(posFromMemory - this.size + 1) { 0L })
+        }
+
+        this[posFromMemory] = value
+    }
+}
+
+sealed class Optcode {
+    abstract fun getPointerMove(): Int
+    fun saveTo(pointer: Int) = pointer + getPointerMove() - 1
+
+    companion object {
+        operator fun invoke(value: Int): Optcode {
+            return when (value) {
+                1 -> Add
+                2 -> Mul
+                3 -> Input
+                4 -> Output
+                5 -> JumpTrue
+                6 -> JumpFalse
+                7 -> LessThan
+                8 -> Equals
+                9 -> RelativeBaseOffset
+                99 -> End
+                else -> throw IllegalArgumentException("Wrong opcode code for $value")
+            }
+        }
+    }
+
+    object Add : Optcode() {
+        override fun getPointerMove(): Int = 4
+    }
+    object Mul : Optcode() {
+        override fun getPointerMove(): Int = 4
+    }
+    object Input : Optcode() {
+        override fun getPointerMove(): Int = 2
+    }
+    object Output : Optcode() {
+        override fun getPointerMove(): Int = 2
+    }
+    object JumpTrue : Optcode() {
+        override fun getPointerMove(): Int = 3
+    }
+    object JumpFalse : Optcode() {
+        override fun getPointerMove(): Int = 3
+    }
+    object LessThan : Optcode() {
+        override fun getPointerMove(): Int = 4
+    }
+    object Equals : Optcode() {
+        override fun getPointerMove(): Int = 4
+    }
+    object RelativeBaseOffset : Optcode() {
+        override fun getPointerMove(): Int = 2
+    }
+    object End : Optcode() {
+        override fun getPointerMove(): Int = 0
     }
 }

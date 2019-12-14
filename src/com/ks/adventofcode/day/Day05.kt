@@ -6,7 +6,7 @@ import com.ks.adventofcode.util.Utils
 fun main() {
     val program = Utils.readInput("day05")
         .split(',')
-        .map { it.trimEnd().toInt() }
+        .map { it.trimEnd().toLong() }
     val intcodeComputer = IntcodeComputer(program)
     intcodeComputer.runProgram(listOf(1))
     println("Part 1: " + intcodeComputer.outputOfProgram.last())
