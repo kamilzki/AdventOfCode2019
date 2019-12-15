@@ -12,3 +12,4 @@
 | 7 | Amplification Circuit                 | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/com/ks/adventofcode/day/Day07.kt) [\[AoC\]](http://adventofcode.com/2019/day/7)
 | 8 | Space Image Format                    | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/com/ks/adventofcode/day/Day08.kt) [\[AoC\]](http://adventofcode.com/2019/day/8)
 | 9 | Sensor Boost                          | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/com/ks/adventofcode/day/Day09.kt) [\[AoC\]](http://adventofcode.com/2019/day/9)
+| 10| Monitoring Station                    | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/com/ks/adventofcode/day/Day10.kt) [\[AoC\]](http://adventofcode.com/2019/day/10)
