@@ -25,7 +25,7 @@ class EmergencyHullPaintingRobot(private val computer: IntcodeComputer) {
     }
 
     private tailrec fun paint(location: PaintedPanel, ship: MutableMap<Pair<Int, Int>, Int>): MutableMap<Pair<Int, Int>, Int> {
-        if (computer.state is IntcodeComputer.State.HALT)
+        if (computer.isHalt())
             return ship
 
         val (color, side) = computer.getColorAndSide()

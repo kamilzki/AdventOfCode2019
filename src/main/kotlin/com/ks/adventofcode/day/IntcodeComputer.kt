@@ -1,8 +1,8 @@
 package com.ks.adventofcode.day
 
 class IntcodeComputer(programValues: List<Long>) {
-    var state: State = State.WAIT
     val outputOfProgram = mutableListOf<Long>()
+    private var state: State = State.WAIT
     private val memory = programValues.toMutableList()
     private var pointer = 0
     private var relativeBase = 0L
@@ -27,6 +27,8 @@ class IntcodeComputer(programValues: List<Long>) {
         object WAIT : State()
         object HALT : State()
     }
+
+    fun isHalt() = state is State.HALT
 
     fun runProgram(inputInstructions: List<Int> = emptyList()): Long {
         outputOfProgram.clear()

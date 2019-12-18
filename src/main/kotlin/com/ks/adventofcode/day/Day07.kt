@@ -11,7 +11,7 @@ class Amplifier(program: List<Long>, private val phase: Int) {
         val instructions = if (first) listOf(phase) + inputInstructions else inputInstructions
         intcodeComputer.runProgram(instructions)
         first = false
-        if (intcodeComputer.state == IntcodeComputer.State.HALT)
+        if (intcodeComputer.isHalt())
             done = true
         return intcodeComputer.outputOfProgram
     }
