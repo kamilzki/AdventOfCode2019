@@ -7,6 +7,9 @@ object Utils {
 
     fun readInputByLines(dayCode: String): List<String> = File(dayCode.toURI()).readLines()
 
+    fun readIntcodeInput(dayCode: String) = Utils.readInput(dayCode).split(',')
+        .map { it.trimEnd().toLong() }
+
     private fun String.toResource() = Utils.javaClass.classLoader.getResource(this)
         ?: throw IllegalArgumentException("Cannot find Resource: $this")
 
