@@ -116,11 +116,18 @@ class IntcodeComputer(programValues: List<Long>) {
         Mode.Position -> this.getOrElse(this.getOrElse(position) { 0 }.toInt()) { 0L }
         Mode.Immediate -> this[position]
         Mode.Relative -> {
+            val readPosition = (this[position] + relativeBase).toInt()
             if (position >= this.size) {
-                this.addAll(List(position - this.size + 1) { 0L })
+                this.increaseMemory(position)
+            } else if (readPosition >= this.size) {
+                this.increaseMemory(readPosition)
             }
-            this[(this[position] + relativeBase).toInt()]
+            this[readPosition]
         }
+    }
+
+    private fun MutableList<Long>.increaseMemory(to: Int) {
+        this.addAll(List(to - this.size + 1) { 0L })
     }
 
     private fun MutableList<Long>.setValue(position: Int, value: Long, mode: Mode) {
