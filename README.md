@@ -20,3 +20,4 @@
 | 15| Oxygen System                         | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/main/kotlin/com/ks/adventofcode/day/Day15.kt) [\[AoC\]](http://adventofcode.com/2019/day/15)
 | 16| Flawed Frequency Transmission         | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/main/kotlin/com/ks/adventofcode/day/Day16.kt) [\[AoC\]](http://adventofcode.com/2019/day/16)
 | 17| Set and Forget                        | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/main/kotlin/com/ks/adventofcode/day/Day17.kt) [\[AoC\]](http://adventofcode.com/2019/day/17)
+| 18| Many-Worlds Interpretation            | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/main/kotlin/com/ks/adventofcode/day/Day18.kt) [\[AoC\]](http://adventofcode.com/2019/day/18)
