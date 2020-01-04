@@ -24,3 +24,4 @@
 | 19| Tractor Beam                          | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/main/kotlin/com/ks/adventofcode/day/Day19.kt) [\[AoC\]](http://adventofcode.com/2019/day/19)
 | 20| Donut Maze                            | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/main/kotlin/com/ks/adventofcode/day/Day20.kt) [\[AoC\]](http://adventofcode.com/2019/day/20)
 | 21| Springdroid Adventure                 | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/main/kotlin/com/ks/adventofcode/day/Day21.kt) [\[AoC\]](http://adventofcode.com/2019/day/21)
+| 22| Slam Shuffle                          | [\[Code\]](https://github.com/kamilzki/AdventOfCode2019/blob/master/src/main/kotlin/com/ks/adventofcode/day/Day22.kt) [\[AoC\]](http://adventofcode.com/2019/day/22)
